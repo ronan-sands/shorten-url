@@ -1,7 +1,13 @@
+using shorten_url.Data;
+using shorten_url.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IUrlDBContext, UrlDBContext>();
+builder.Services.AddScoped<IUrlRepository, UrlRepository>();
+builder.Services.AddSession();
 
 var app = builder.Build();
 
@@ -12,7 +18,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

@@ -1,8 +1,44 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Ronan's URL Shortener";
 }
 
+<div class="text-center" style="padding: 20px">
+    <h1 class="display-2">Ronan's URL Shortener</h1>
+</div>
+
+<div style="width: 100%;">
+    <div style="width: 65%; margin-left: auto; margin-right: auto;">
+        <form id="form" style="text-align: center;" method="post" action="@Url.Action("CreateShortenedURL", "Home")">
+            <input type="text"
+                   placeholder="Enter Full URL"
+                   @*style="width: 100%; border-radius: 5px; height: 45px;"*@
+                   name="longUrl" />
+
+            <button style="background-color: blue; color: white; padding: 10px; border-radius: 10px;"
+                    type="submit">
+                Generate Short URL
+            </button>
+        </form>
+    </div>
+</div>
+
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h3 class="display-4">Shortened URLs</h3>
+    <center>
+        @if (ViewBag.urls != null)
+        {
+            @foreach (var url in ViewBag.urls)
+            {
+                <div style="border:1px solid black; width:66%">
+                    <p><bold>Short URL: @url.ShortURL</bold></p>
+                    <p>Original URL: @url.LongURL</p>
+                </div>
+            }
+        }
+        else
+        {
+            <p><bold>No URLs</bold></p>
+        }
+
+    </center>
 </div>

@@ -10,9 +10,11 @@
   <ItemGroup>
     <None Remove="Data\" />
     <None Remove="MongoDB.Driver" />
+    <None Remove="Repositories\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="Repositories\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
