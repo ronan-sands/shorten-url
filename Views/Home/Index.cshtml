@@ -1,44 +1,62 @@
-﻿@{
-    ViewData["Title"] = "Ronan's URL Shortener";
-}
-
-<div class="text-center" style="padding: 20px">
-    <h1 class="display-2">Ronan's URL Shortener</h1>
+﻿@{ 
+    ViewData["Title"] = "Ronan's URL Shortener"; 
+} 
+ 
+<div class="text-center" style="padding: 20px"> 
+    <h1 class="display-2">Ronan's URL Shortener</h1> 
+</div> 
+ 
+<div style="width: 100%;"> 
+    <div style="width: 65%; margin-left: auto; margin-right: auto;"> 
+        <form id="form" style="text-align: center;" method="post" action="@Url.Action("CreateShortenedURL", "Home")"> 
+            <input type="text" 
+                   placeholder="Enter Full URL" 
+                   @*style="width: 100%; border-radius: 5px; height: 45px;"*@ 
+                   name="longUrl" /> 
+ 
+            <button style="background-color: blue; color: white; padding: 10px; border-radius: 10px;" 
+                    type="submit"> 
+                Generate Short URL 
+            </button> 
+        </form> 
+    </div> 
 </div>
 
-<div style="width: 100%;">
-    <div style="width: 65%; margin-left: auto; margin-right: auto;">
-        <form id="form" style="text-align: center;" method="post" action="@Url.Action("CreateShortenedURL", "Home")">
-            <input type="text"
-                   placeholder="Enter Full URL"
-                   @*style="width: 100%; border-radius: 5px; height: 45px;"*@
-                   name="longUrl" />
+<body>
 
-            <button style="background-color: blue; color: white; padding: 10px; border-radius: 10px;"
-                    type="submit">
-                Generate Short URL
-            </button>
-        </form>
-    </div>
-</div>
-
-<div class="text-center">
-    <h3 class="display-4">Shortened URLs</h3>
-    <center>
-        @if (ViewBag.urls != null)
-        {
-            @foreach (var url in ViewBag.urls)
+    <div class="text-center">
+        <center>
+            @if (ViewBag.lastLongURL != null && ViewBag.lastShortURL != null)
             {
-                <div style="border:1px solid black; width:66%">
-                    <p><bold>Short URL: @url.ShortURL</bold></p>
-                    <p>Original URL: @url.LongURL</p>
+                <h4>Your URL</h4>
+                <div style="width:66%; border: 1px solid black; border-radius: 5px">
+                    <p>Original URL: <a href="@ViewBag.lastLongURL">@ViewBag.lastLongURL</a></p>
+                    <p>Shortened URL: <a href="@ViewBag.lastShortURL">@ViewBag.lastShortURL</a></p>
                 </div>
-            }
-        }
-        else
-        {
-            <p><bold>No URLs</bold></p>
-        }
 
-    </center>
-</div>
+            }
+            else
+            {
+                <p>No Last URL</p>
+            }
+
+
+
+            @*@if (ViewBag.urls != null)
+                {
+                    @foreach (var url in ViewBag.urls)
+                    {
+                        <div style="border:1px solid black; width:66%">
+                            <p><bold>Short URL: @url.ShortURL</bold></p>
+                            <p>Original URL: @url.LongURL</p>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p><bold>Last : @ViewBag.lastURL.LongURL</bold></p>
+                }*@
+
+        </center>
+    </div>
+</body>

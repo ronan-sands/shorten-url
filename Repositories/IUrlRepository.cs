@@ -13,7 +13,7 @@ namespace shorten_url.Repositories
 
         Task<ShortenedURL> GetShortenedURLByLongURL(string longUrl);
 
-        Task<ShortenedURL> GetLongURLByShortURL(string shortURL);
+        Task<ShortenedURL> GetLongURLByCode(string shortURL);
 
         Task<IEnumerable<ShortenedURL>> GetURLsBySession(string sessionID);
 

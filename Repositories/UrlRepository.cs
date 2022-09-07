@@ -44,11 +44,11 @@ namespace shorten_url.Repositories
                             .FirstOrDefaultAsync();
         }
 
-        public async Task<ShortenedURL> GetLongURLByShortURL(string shortURL)
+        public async Task<ShortenedURL> GetLongURLByCode(string code)
         {
             return await _context
                             .URLs
-                            .Find(u => u.ShortURL == shortURL)
+                            .Find(u => u.ShortCode == code)
                             .FirstOrDefaultAsync();
         }
 

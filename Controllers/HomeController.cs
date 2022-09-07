@@ -28,6 +28,9 @@ public class HomeController : Controller
 
         ViewBag.urls = urls;
 
+        ViewBag.lastLongURL = TempData["lastLongURL"];
+        ViewBag.lastShortURL = TempData["lastShortURL"];
+
 
 
         return View();
@@ -36,7 +39,11 @@ public class HomeController : Controller
     [HttpGet("/{shortUrlCode}")]
     public async Task<IActionResult> Index(string shortUrlCode)
     {
-        ShortenedURL url = await _repository.GetLongURLByShortURL(shortUrlCode);
+
+        ViewBag.lastLongURL = TempData["lastLongURL"];
+        ViewBag.lastShortURL = TempData["lastShortURL"];
+
+        ShortenedURL url = await _repository.GetLongURLByCode(shortUrlCode);
 
         if (url == null)
         {
@@ -67,29 +74,44 @@ public class HomeController : Controller
         //add validation to ensure URL is valid
         //map endpoints to db
         //check if url already exists in db
+
+        string currentUrl = HttpContext.Request.Host.ToString();
+        var scheme = HttpContext.Request.Scheme;
+
         ShortenedURL url = await _repository.GetShortenedURLByLongURL(longUrl);
+        
 
         if (url != null)
         {
-            return Ok(url);
+            //ViewBag.lastURL = url;
+            return RedirectToAction("Index");
         }
 
         var counter = await _repository.GetNextSequenceVal("counter");
 
-        string shortUrl = WebEncoders.Base64UrlEncode(BitConverter.GetBytes(counter));
+        string shortCode = WebEncoders.Base64UrlEncode(BitConverter.GetBytes(counter));
+        string shortUrl = scheme + "://" + currentUrl + "/" + shortCode;
         string sessionID = HttpContext.Session.Id;
         url = new ShortenedURL
         {
             ShortURL = shortUrl,
             LongURL = longUrl,
             counter = counter,
-            SessionID = sessionID
+            SessionID = sessionID,
+            ShortCode = shortCode
         };
 
 
         await _repository.CreateShortenedURL(url);
 
+        //ViewBag.lastURL = url;
+
+        TempData["lastLongURL"] = url.LongURL;
+        TempData["lastShortURL"] = url.ShortURL;
+
         //return CreatedAtRoute("GetShortenedURL", new { id = url.Id }, url);
+        //return View("Index");
+
         return RedirectToAction("Index");
     }
 }
