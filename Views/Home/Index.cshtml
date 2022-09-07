@@ -17,7 +17,11 @@
             <button style="background-color: blue; color: white; padding: 10px; border-radius: 10px;" 
                     type="submit"> 
                 Generate Short URL 
-            </button> 
+            </button>
+            @if(ViewBag.invalidURL == true)
+            {
+                <p>INVALID URL</p>
+            }
         </form> 
     </div> 
 </div>

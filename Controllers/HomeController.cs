@@ -72,18 +72,39 @@ public class HomeController : Controller
     public async Task<IActionResult> CreateShortenedURL(string longUrl)
     {
         //add validation to ensure URL is valid
-        //map endpoints to db
-        //check if url already exists in db
+        HttpClient client = new HttpClient();
+
+        ViewBag.invalidURL = false;
+
+        try
+        {
+            var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, longUrl));
+            //if (response.StatusCode != HttpStatusCode.OK)
+            //{
+            //    //Invalid URL
+            //    ViewBag.invalidURL = true;
+            //    return View();
+            //}
+        }
+        catch
+        {
+            //Invalid URL
+            ViewBag.invalidURL = true;
+            return View("Index");
+        }
+
+        
 
         string currentUrl = HttpContext.Request.Host.ToString();
         var scheme = HttpContext.Request.Scheme;
-
+        //check if url already exists in db
         ShortenedURL url = await _repository.GetShortenedURLByLongURL(longUrl);
         
 
         if (url != null)
         {
-            //ViewBag.lastURL = url;
+            TempData["lastLongURL"] = url.LongURL;
+            TempData["lastShortURL"] = url.ShortURL;
             return RedirectToAction("Index");
         }
 
