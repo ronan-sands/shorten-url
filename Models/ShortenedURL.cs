@@ -14,6 +14,8 @@ namespace shorten_url.Models
 
         public string SessionID { get; set; }
 
+        public string ShortCode { get; set; }
+
         public string ShortURL { get; set; }
 
         public string LongURL { get; set; }
