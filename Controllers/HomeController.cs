@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.WebUtilities;
 using shorten_url.Models;
 using shorten_url.Repositories;
@@ -20,13 +21,15 @@ public class HomeController : Controller
         _logger = logger;
     }
 
+
+    [Route("/")]
     public async Task<IActionResult>Index()
     {
         //string sessionID = HttpContext.Session.Id;
 
-        var urls = await _repository.GetURLs();
+        //var urls = await _repository.GetURLs();
 
-        ViewBag.urls = urls;
+        //ViewBag.urls = urls;
 
         ViewBag.lastLongURL = TempData["lastLongURL"];
         ViewBag.lastShortURL = TempData["lastShortURL"];
@@ -43,14 +46,34 @@ public class HomeController : Controller
         ViewBag.lastLongURL = TempData["lastLongURL"];
         ViewBag.lastShortURL = TempData["lastShortURL"];
 
-        ShortenedURL url = await _repository.GetLongURLByCode(shortUrlCode);
+        Console.WriteLine("Directing to URL with code: "  + shortUrlCode);
 
-        if (url == null)
+        try
         {
-            return View();
+            ShortenedURL url = await _repository.GetLongURLByCode(shortUrlCode);
+            if (url == null)
+            {
+                //ErrorViewModel model = new ErrorViewModel();
+                return View("NotFoundError");
+            }
+
+            return Redirect(url.LongURL);
+        }
+        catch(TimeoutException te)
+        {
+            Console.WriteLine("Request Timed Out: " + te.Message);
+            return View("TimeoutError");
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine("Unknown Error Occured: " + e.Message);
+            ErrorViewModel model = new ErrorViewModel();
+            return View("Error");
         }
 
-        return Redirect(url.LongURL);
+        
+
+        
     }
 
     public IActionResult Privacy()
@@ -97,18 +120,52 @@ public class HomeController : Controller
 
         string currentUrl = HttpContext.Request.Host.ToString();
         var scheme = HttpContext.Request.Scheme;
-        //check if url already exists in db
-        ShortenedURL url = await _repository.GetShortenedURLByLongURL(longUrl);
-        
 
-        if (url != null)
+        ShortenedURL url;
+        long counter;
+        //check if url already exists in db
+        try
         {
-            TempData["lastLongURL"] = url.LongURL;
-            TempData["lastShortURL"] = url.ShortURL;
-            return RedirectToAction("Index");
+            Console.WriteLine("Checking if Url already exists.");
+            url = await _repository.GetShortenedURLByLongURL(longUrl);
+            if (url != null)
+            {
+                Console.WriteLine("URL already exists at " + url.ShortURL);
+                TempData["lastLongURL"] = url.LongURL;
+                TempData["lastShortURL"] = url.ShortURL;
+                return RedirectToAction("Index");
+            }
+        }
+        catch (TimeoutException te)
+        {
+            Console.WriteLine("Request Timed Out: " + te.Message);
+            return View("TimeoutError");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Unknown Error Occured: " + e.Message);
+            ErrorViewModel model = new ErrorViewModel();
+            return View("Error");
         }
 
-        var counter = await _repository.GetNextSequenceVal("counter");
+
+        try
+        {
+            Console.WriteLine("Getting Next Sequence Value from DB.");
+            counter = await _repository.GetNextSequenceVal("counter");
+        }
+        catch (TimeoutException te)
+        {
+            Console.WriteLine("Request Timed Out: " + te.Message);
+            return View("TimeoutError");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Unknown Error Occured: " + e.Message);
+            ErrorViewModel model = new ErrorViewModel();
+            return View("Error");
+        }
+
 
         string shortCode = WebEncoders.Base64UrlEncode(BitConverter.GetBytes(counter));
         string shortUrl = scheme + "://" + currentUrl + "/" + shortCode;
@@ -122,8 +179,23 @@ public class HomeController : Controller
             ShortCode = shortCode
         };
 
-
-        await _repository.CreateShortenedURL(url);
+        try
+        {
+            Console.WriteLine("Adding Url ('" + url.LongURL + "')");
+            await _repository.CreateShortenedURL(url);
+            Console.WriteLine("URL added at: " + url.ShortURL);
+        }
+        catch (TimeoutException te)
+        {
+            Console.WriteLine("Request Timed Out: " + te.Message);
+            return View("TimeoutError");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Unknown Error Occured: " + e.Message);
+            ErrorViewModel model = new ErrorViewModel();
+            return View("Error");
+        }
 
         //ViewBag.lastURL = url;
 

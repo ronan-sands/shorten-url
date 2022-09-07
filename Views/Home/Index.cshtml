@@ -11,7 +11,6 @@
         <form id="form" style="text-align: center;" method="post" action="@Url.Action("CreateShortenedURL", "Home")"> 
             <input type="text" 
                    placeholder="Enter Full URL" 
-                   @*style="width: 100%; border-radius: 5px; height: 45px;"*@ 
                    name="longUrl" /> 
  
             <button style="background-color: blue; color: white; padding: 10px; border-radius: 10px;" 
@@ -20,7 +19,7 @@
             </button>
             @if(ViewBag.invalidURL == true)
             {
-                <p>INVALID URL</p>
+                <h2 class="text-danger">Error: Please Enter a Valid URL</h2>
             }
         </form> 
     </div> 
@@ -38,10 +37,6 @@
                     <p>Shortened URL: <a href="@ViewBag.lastShortURL">@ViewBag.lastShortURL</a></p>
                 </div>
 
-            }
-            else
-            {
-                <p>No Last URL</p>
             }
 
 
