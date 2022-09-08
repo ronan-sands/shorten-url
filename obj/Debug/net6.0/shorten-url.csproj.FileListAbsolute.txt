@@ -41,3 +41,5 @@
 /Users/ronansands/Documents/Projects/UrlShortener/shorten-url/obj/Debug/net6.0/shorten-url.pdb
 /Users/ronansands/Documents/Projects/UrlShortener/shorten-url/obj/Debug/net6.0/shorten-url.genruntimeconfig.cache
 /Users/ronansands/Documents/Projects/UrlShortener/shorten-url/obj/Debug/net6.0/ref/shorten-url.dll
+/Users/ronansands/Documents/Projects/UrlShortener/shorten-url/bin/Debug/net6.0/Castle.Core.dll
+/Users/ronansands/Documents/Projects/UrlShortener/shorten-url/bin/Debug/net6.0/Moq.dll

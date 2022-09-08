@@ -11,6 +11,7 @@
     <None Remove="Data\" />
     <None Remove="MongoDB.Driver" />
     <None Remove="Repositories\" />
+    <None Remove="Moq" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
@@ -18,5 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
+    <PackageReference Include="Moq" Version="4.18.2" />
   </ItemGroup>
 </Project>

@@ -34,8 +34,8 @@ public class HomeController : Controller
     public async Task<IActionResult> Index(string shortUrlCode)
     {
 
-        ViewBag.lastLongURL = TempData["lastLongURL"];
-        ViewBag.lastShortURL = TempData["lastShortURL"];
+        //ViewBag.lastLongURL = TempData["lastLongURL"];
+        //ViewBag.lastShortURL = TempData["lastShortURL"];
 
         Console.WriteLine("Directing to URL with code: "  + shortUrlCode);
 
@@ -100,8 +100,8 @@ public class HomeController : Controller
             return View("Index");
         }
 
-        
 
+        var test = HttpContext.Request;
         string currentUrl = HttpContext.Request.Host.ToString();
         var scheme = HttpContext.Request.Scheme; //get http or https
 

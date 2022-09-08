@@ -11,7 +11,7 @@
     "shorten_url": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7034;http://localhost:5228",
+      "applicationUrl": "http://localhost:30661",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
