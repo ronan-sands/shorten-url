@@ -23,19 +23,10 @@ public class HomeController : Controller
 
 
     [Route("/")]
-    public async Task<IActionResult>Index()
+    public IActionResult Index()
     {
-        //string sessionID = HttpContext.Session.Id;
-
-        //var urls = await _repository.GetURLs();
-
-        //ViewBag.urls = urls;
-
         ViewBag.lastLongURL = TempData["lastLongURL"];
         ViewBag.lastShortURL = TempData["lastShortURL"];
-
-
-
         return View();
     }
 
@@ -53,7 +44,6 @@ public class HomeController : Controller
             ShortenedURL url = await _repository.GetLongURLByCode(shortUrlCode);
             if (url == null)
             {
-                //ErrorViewModel model = new ErrorViewModel();
                 return View("NotFoundError");
             }
 
@@ -101,13 +91,7 @@ public class HomeController : Controller
 
         try
         {
-            var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, longUrl));
-            //if (response.StatusCode != HttpStatusCode.OK)
-            //{
-            //    //Invalid URL
-            //    ViewBag.invalidURL = true;
-            //    return View();
-            //}
+            var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, longUrl)); //send http head request to check if url is valid
         }
         catch
         {
@@ -119,10 +103,11 @@ public class HomeController : Controller
         
 
         string currentUrl = HttpContext.Request.Host.ToString();
-        var scheme = HttpContext.Request.Scheme;
+        var scheme = HttpContext.Request.Scheme; //get http or https
 
         ShortenedURL url;
         long counter;
+
         //check if url already exists in db
         try
         {
@@ -169,13 +154,11 @@ public class HomeController : Controller
 
         string shortCode = WebEncoders.Base64UrlEncode(BitConverter.GetBytes(counter));
         string shortUrl = scheme + "://" + currentUrl + "/" + shortCode;
-        string sessionID = HttpContext.Session.Id;
         url = new ShortenedURL
         {
             ShortURL = shortUrl,
             LongURL = longUrl,
             counter = counter,
-            SessionID = sessionID,
             ShortCode = shortCode
         };
 
@@ -197,13 +180,8 @@ public class HomeController : Controller
             return View("Error");
         }
 
-        //ViewBag.lastURL = url;
-
         TempData["lastLongURL"] = url.LongURL;
         TempData["lastShortURL"] = url.ShortURL;
-
-        //return CreatedAtRoute("GetShortenedURL", new { id = url.Id }, url);
-        //return View("Index");
 
         return RedirectToAction("Index");
     }

@@ -15,8 +15,6 @@ namespace shorten_url.Repositories
 
         Task<ShortenedURL> GetLongURLByCode(string shortURL);
 
-        Task<IEnumerable<ShortenedURL>> GetURLsBySession(string sessionID);
-
         Task<bool> UpdateShortenedURL(ShortenedURL url);
 
         Task<bool> DeleteShortenedURL(string id);

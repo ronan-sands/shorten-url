@@ -52,13 +52,6 @@ namespace shorten_url.Repositories
                             .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<ShortenedURL>> GetURLsBySession(string sessionID)
-        {
-            return await _context
-                            .URLs
-                            .Find(u => u.SessionID == sessionID)
-                            .ToListAsync();
-        }
 
         public async Task<IEnumerable<ShortenedURL>> GetURLs()
         {
