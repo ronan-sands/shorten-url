@@ -20,6 +20,8 @@ public class MongoMockTests
 
     private ShortenedURL testObject;
 
+    private ITempDataDictionary tempData;
+
 
     public MongoMockTests()
     {
@@ -44,6 +46,18 @@ public class MongoMockTests
 
         controller = new HomeController(_mockRepo.Object, logger);
 
+        //Configure HttpContext to prevent exceptions
+        controller.ControllerContext = new ControllerContext();
+        controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+        //Configure TempData to prevent exceptions
+        Mock<ITempDataProvider> tempDataProvider = new Mock<ITempDataProvider>();
+        TempDataDictionaryFactory tempDataDictionaryFactory = new TempDataDictionaryFactory(tempDataProvider.Object);
+        tempData = tempDataDictionaryFactory.GetTempData(new DefaultHttpContext());
+        tempData["lastLongURL"] = "";
+        tempData["lastShortURL"] = "";
+        controller.TempData = tempData;
+
     }
 
     [Fact]
@@ -57,17 +71,7 @@ public class MongoMockTests
     [Fact]
     public async void TestShortenedURLCreatedCorrectly()
     {
-        //Configure HttpContext to prevent exceptions
-        controller.ControllerContext = new ControllerContext();
-        controller.ControllerContext.HttpContext = new DefaultHttpContext();
-
-        //Configure TempData to prevent exceptions
-        Mock<ITempDataProvider> tempDataProvider = new Mock<ITempDataProvider>();
-        TempDataDictionaryFactory tempDataDictionaryFactory = new TempDataDictionaryFactory(tempDataProvider.Object);
-        ITempDataDictionary tempData = tempDataDictionaryFactory.GetTempData(new DefaultHttpContext());
-        tempData["lastLongURL"] = "";
-        tempData["lastShortURL"] = "";
-        controller.TempData = tempData;
+        
 
         //expected ShortenedURL to be created
         string httpScheme = controller.HttpContext.Request.Scheme;
@@ -85,13 +89,50 @@ public class MongoMockTests
 
         tempData = controller.TempData;
 
-        
+
+        //Assert that ShortenedURL created correctly and tempData has been modified accordingly
         Assert.True(tempData["lastLongURL"] != null && tempData["lastShortURL"] != null
                         && tempData["lastLongURL"].ToString() == expectedUrlObject.LongURL
                         && tempData["lastShortURL"].ToString() == expectedUrlObject.ShortURL);
     }
 
+    [Fact]
+    public async void TestInvalidRedirectError()
+    {
+        _mockRepo.Setup(x => x.GetLongURLByCode(testObject.ShortCode))
+                                .Returns(Task.FromResult<ShortenedURL>(null));
+
+        ViewResult result = (ViewResult)await controller.Index(testObject.ShortCode);
+
+        Assert.Equal(result.ViewName, "NotFoundError");
+
+    }
+
+    [Fact]
+    public async void TestIndexTimeoutError()
+    {
+        _mockRepo.Setup(x => x.GetLongURLByCode(It.IsAny<string>()))
+                                .Throws(new TimeoutException());
+
+        ViewResult result = (ViewResult)await controller.Index(testObject.ShortCode);
+
+        Assert.Equal(result.ViewName, "TimeoutError");
+
+    }
+
+    [Fact]
+    public async void TestCreateTimeoutError()
+    {
+        _mockRepo.Setup(x => x.CreateShortenedURL(It.IsAny<ShortenedURL>()))
+                                .Throws(new TimeoutException());
+
+        ViewResult result = (ViewResult)await controller.CreateShortenedURL("https://www.youtube.com/");
+
+        Assert.Equal(result.ViewName, "TimeoutError");
+
+    }
 
 
-    
+
+
 }

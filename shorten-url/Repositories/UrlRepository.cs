@@ -79,6 +79,7 @@ namespace shorten_url.Repositories
 
         public async Task<long> GetNextSequenceVal(string seqName)
         {
+            await SeedSequence(seqName);
             var filter = Builders<Sequence>.Filter.Eq(a => a.Name, seqName);
             var update = Builders<Sequence>.Update.Inc(a => a.Value, 1);
             var sequence = await _context.Sequences.FindOneAndUpdateAsync(filter, update);
@@ -86,7 +87,25 @@ namespace shorten_url.Repositories
             return sequence.Value;
         }
 
+        public async Task SeedSequence(string seqName)
+        {
+            //Creates Sequence if one does not already exist
+            var count = await _context.Sequences
+                            .Find(s => s.Name == seqName)
+                            .CountDocumentsAsync();
+            if(count == 0)
+            {
+                Sequence seq = new Sequence
+                {
+                    Name = seqName,
+                    Value = 0
+                };
 
+                await _context.Sequences.InsertOneAsync(seq);
+
+            }
+;        }
+        
     }
 }
 

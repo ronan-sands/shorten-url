@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.WebUtilities;
@@ -30,12 +31,22 @@ public class HomeController : Controller
         return View();
     }
 
+    [Route("/error")]
+    public IActionResult HandleError()
+    {
+        //catches unhandled errors
+        var exceptionHandlerFeature =
+            HttpContext.Features.Get<IExceptionHandlerFeature>()!;
+
+        return View("Error", exceptionHandlerFeature.Error);
+    }
+
+
     [HttpGet("/{shortUrlCode}")]
     public async Task<IActionResult> Index(string shortUrlCode)
     {
 
-        //ViewBag.lastLongURL = TempData["lastLongURL"];
-        //ViewBag.lastShortURL = TempData["lastShortURL"];
+        //Redirects user to url depending on short Url code
 
         Console.WriteLine("Directing to URL with code: "  + shortUrlCode);
 
@@ -44,6 +55,7 @@ public class HomeController : Controller
             ShortenedURL url = await _repository.GetLongURLByCode(shortUrlCode);
             if (url == null)
             {
+                //if no url with code found
                 return View("NotFoundError");
             }
 
@@ -57,8 +69,7 @@ public class HomeController : Controller
         catch(Exception e)
         {
             Console.WriteLine("Unknown Error Occured: " + e.Message);
-            ErrorViewModel model = new ErrorViewModel();
-            return View("Error");
+            return View("Error", e);
         }
 
         
@@ -84,7 +95,7 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateShortenedURL(string longUrl)
     {
-        //add validation to ensure URL is valid
+        //validation to ensure URL is valid
         HttpClient client = new HttpClient();
 
         ViewBag.invalidURL = false;
@@ -129,8 +140,7 @@ public class HomeController : Controller
         catch (Exception e)
         {
             Console.WriteLine("Unknown Error Occured: " + e.Message);
-            ErrorViewModel model = new ErrorViewModel();
-            return View("Error");
+            return View("Error", e);
         }
 
 
@@ -147,8 +157,7 @@ public class HomeController : Controller
         catch (Exception e)
         {
             Console.WriteLine("Unknown Error Occured: " + e.Message);
-            ErrorViewModel model = new ErrorViewModel();
-            return View("Error");
+            return View("Error", e);
         }
 
 
@@ -176,8 +185,7 @@ public class HomeController : Controller
         catch (Exception e)
         {
             Console.WriteLine("Unknown Error Occured: " + e.Message);
-            ErrorViewModel model = new ErrorViewModel();
-            return View("Error");
+            return View("Error", e);
         }
 
         TempData["lastLongURL"] = url.LongURL;

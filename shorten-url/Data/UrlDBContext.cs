@@ -16,7 +16,6 @@ namespace shorten_url.Data
 
             Sequences = database.GetCollection<Sequence>("Sequences");
 
-            //Seed Data
         }
 
         public IMongoCollection<ShortenedURL> URLs { get; }

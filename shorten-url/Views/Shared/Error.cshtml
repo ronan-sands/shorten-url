@@ -1,16 +1,14 @@
-﻿@model ErrorViewModel
+﻿@model Exception
 @{
     ViewData["Title"] = "Error";
 }
 
-<h1 class="text-danger">Error.</h1>
+<h1 class="text-danger">Unknown Error Occurred</h1>
 <h5 class="text-danger">An error occurred while processing your request.</h5>
+<h5 class="text-danger">Exception: @Model.GetType().Name</h5>
+<h5 class="text-danger">Error Message: @Model.Message</h5>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+
+
 
 
