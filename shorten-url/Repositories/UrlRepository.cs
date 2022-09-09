@@ -80,6 +80,8 @@ namespace shorten_url.Repositories
         public async Task<long> GetNextSequenceVal(string seqName)
         {
             await SeedSequence(seqName);
+
+            //gets sequence value and increments it
             var filter = Builders<Sequence>.Filter.Eq(a => a.Name, seqName);
             var update = Builders<Sequence>.Update.Inc(a => a.Value, 1);
             var sequence = await _context.Sequences.FindOneAndUpdateAsync(filter, update);

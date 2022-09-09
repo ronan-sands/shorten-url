@@ -160,7 +160,7 @@ public class HomeController : Controller
             return View("Error", e);
         }
 
-
+        //Create short url code from counter
         string shortCode = WebEncoders.Base64UrlEncode(BitConverter.GetBytes(counter));
         string shortUrl = scheme + "://" + currentUrl + "/" + shortCode;
         url = new ShortenedURL
@@ -174,6 +174,7 @@ public class HomeController : Controller
         try
         {
             Console.WriteLine("Adding Url ('" + url.LongURL + "')");
+            //add document to DB for shortened URL
             await _repository.CreateShortenedURL(url);
             Console.WriteLine("URL added at: " + url.ShortURL);
         }
@@ -188,6 +189,7 @@ public class HomeController : Controller
             return View("Error", e);
         }
 
+        //update view temp data
         TempData["lastLongURL"] = url.LongURL;
         TempData["lastShortURL"] = url.ShortURL;
 
